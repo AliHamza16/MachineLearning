@@ -1,59 +1,48 @@
-import { sigmoid } from "./activations.js";
+import { activations } from "./activations.js";
+import { Neuron } from "./neuron.js";
+import fs from "fs";
+import {randomUUID} from "crypto"
 
-class Neuron {
-    constructor({ inputs = [], weights = [], bias = 0 }) {
-        this.inputs = inputs;
-        this.weights = weights;
-        this.bias = bias;
-    }
-    output(activation = sigmoid) {
-        let outputValue = 0;
-        for (let index = 0; index < this.inputs.length; index++) {
-            const input = this.inputs[index];
-            outputValue += input * this.weights[index];
-        }
-        return activation(outputValue + this.bias);
-    }
-    change({ inputs, weights, bias }) {
-        this.inputs = inputs || this.inputs;
-        this.weights = weights || this.weights;
-        this.bias = bias || this.bias;
-    }
-}
+const range = 15
 
 export class NeuralNetwork {
     constructor({
         inputSize,
-        hiddenLayers,
+        hiddenLayers = [0],
         outputSize,
-        accuracyRate,
-        iterations,
+        accuracyRate = 0.95,
+        log = false,
+        activation = "sigmoid",
+        save = false,
     }) {
         this.inputs = Array(inputSize);
-        this.hiddenLayer = hiddenLayers.map((size) => {
-            return Array(size)
-        });
+        this.hiddenLayer = hiddenLayers.map((size) => Array(size));
         this.outputLayer = Array(outputSize);
         this.layers = [this.inputs, ...this.hiddenLayer, this.outputLayer];
-        this.#randomBrain();
         this.accuracyRate = 1 - accuracyRate;
-        this.iterations = iterations;
+        this.log = log;
+        this.activation = activations[activation];
+        this.save = save;
+        this.#randomBrain();
     }
-    updateLayers() {
+    #updateLayers() {
         this.layers = [this.inputs, ...this.hiddenLayer, this.outputLayer];
     }
     #createArray(min, max, size) {
-        const arr = [];
-        for (let index = 0; index < size; index++) {
-            arr.push(Math.random() * (max - min) + min);
-        }
-        return arr;
+        return Array(size)
+            .fill(null)
+            .map((item) => {
+                return Math.random() * (max - min) + min;
+            });
     }
-    getError(actualValues, targetValues) {
+    #getError(actualValues, targetValues) {
         let error = 0;
         for (let index = 0; index < actualValues.length; index++) {
             const element = actualValues[index];
-            error += (targetValues[index] - element) ** 2;
+            const element2 = targetValues[index];
+            element.map((x, i) => {
+                error += (element2[i] - x) ** 2;
+            });
         }
         return error;
     }
@@ -64,11 +53,11 @@ export class NeuralNetwork {
                     this.hiddenLayer[i][j] = new Neuron({
                         inputs: [],
                         weights: this.#createArray(
-                            -15,
-                            15,
+                            -range,
+                            range,
                             this.layers[i].length
                         ),
-                        bias: this.#createArray(-15, 15, 1)[0],
+                        bias: this.#createArray(-range, range, 1)[0],
                     });
                 }
             }
@@ -76,27 +65,27 @@ export class NeuralNetwork {
                 this.outputLayer[i] = new Neuron({
                     inputs: [],
                     weights: this.#createArray(
-                        -10,
-                        10,
+                        -range,
+                        range,
                         this.layers[this.layers.length - 2].length
                     ),
-                    bias: this.#createArray(-15, 15, 1)[0],
+                    bias: this.#createArray(-range, range, 1)[0],
                 });
             }
         } else {
             for (let i = 0; i < this.outputLayer.length; i++) {
                 this.outputLayer[i] = new Neuron({
                     inputs: [],
-                    weights: this.#createArray(-15, 15, this.layers[0].length),
-                    bias: this.#createArray(-15, 15, 1)[0],
+                    weights: this.#createArray(-range, range, this.layers[0].length),
+                    bias: this.#createArray(-range, range, 1)[0],
                 });
             }
         }
-        this.updateLayers();
+        this.#updateLayers();
     }
     run(input) {
         this.inputs = input;
-        this.updateLayers();
+        this.#updateLayers();
         let clone = [input];
         if (this.hiddenLayer[0].length != 0) {
             for (let index = 0; index < this.hiddenLayer.length; index++) {
@@ -105,7 +94,7 @@ export class NeuralNetwork {
                 for (let index2 = 0; index2 < element.length; index2++) {
                     const element2 = element[index2];
                     element2.change({ inputs: clone[index] });
-                    a1.push(element2.output(sigmoid));
+                    a1.push(Number(element2.output(this.activation).toFixed(8)));
                 }
                 clone.push(a1);
             }
@@ -114,34 +103,54 @@ export class NeuralNetwork {
         for (let index = 0; index < this.outputLayer.length; index++) {
             const element = this.outputLayer[index];
             element.change({ inputs: clone[clone.length - 1] });
-            a2.push(element.output(sigmoid));
+            a2.push(Number(element.output(this.activation).toFixed(8)));
         }
         clone.push(a2);
         return clone[clone.length - 1];
     }
     train(trainingData) {
-        const inputs = trainingData.map((item) => item.input)
-        const outputs = trainingData.map((item) => item.output)
+        const inputs = trainingData.map((item) => item.input);
+        const outputs = trainingData.map((item) => item.output);
         const optimize = () => {
             this.#randomBrain();
             const actualValues = inputs.map((input) => {
                 return this.run(input);
             });
-            return this.getError(actualValues, outputs);
+            return this.#getError(actualValues, outputs);
         };
         let error = 1;
+        let min_error = 1;
         let t = this.accuracyRate;
         let i = 1;
         while (error > t) {
             error = optimize();
+            if (error < min_error) {
+                min_error = error;
+                if (this.log) console.log(i, `error: ${min_error}`);
+            }
             i++;
             if (!(i % 1000)) {
                 t += 0.0001;
-                if (this.iterations) console.log(i);
+                if(this.log) console.log(i);
             }
         }
         console.log(
-            `eğitim tamamlandı... doğruluk: %${(100 - error * 100).toFixed(2)}`
+            `training completed... accuracy: %${(100 - error * 100).toFixed(2)}`
         );
+        if (this.save) {
+            this.#updateLayers();
+            const a = randomUUID()
+            fs.writeFile(
+                `models/${a}.json`,
+                JSON.stringify(this.layers),
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("saved", `${a}.json`);
+                    }
+                }
+            );
+        }
     }
 }

@@ -26,8 +26,16 @@ const config = {
 The closer the ratio is to one, the higher the accuracy of the neural network.
 However, high accuracy rates can lead to longer training times for complex networks.
 
-## iterations
+## log
 Determines whether to print to the console how many iterations have been done.
+
+## activation
+An Activation Function decides whether a neuron should be activated or not.
+<br>
+Supported activations: sigmoid | binaryStep | tanh (hyperbolic) | relu | softplus | gaussian
+
+## save
+saves the trained ai model to `models/` directory
 
 # Training Neural Network
 ```javascript
@@ -36,7 +44,9 @@ const config = {
     hiddenLayers: [0],
     outputSize: 1,
     accuracyRate: 0.999,
-    iterations: false
+    log: false,
+    activation: 'sigmoid',
+    save: false
 }
 
 const nn = new NeuralNetwork(config)
@@ -44,10 +54,10 @@ const nn = new NeuralNetwork(config)
 to train the neural network, create a array that specifies which result it will give based on which input
 ```javascript
 let trainingData = [
-    {input: [0,0], output: 1},
-    {input: [0,1], output: 1},
-    {input: [1,0], output: 0},
-    {input: [1,1], output: 1},
+    {input: [0,0], output: [1]},
+    {input: [0,1], output: [1]},
+    {input: [1,0], output: [0]},
+    {input: [1,1], output: [1]},
 ]
 ```
 and call train function with training data

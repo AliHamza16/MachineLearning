@@ -2,19 +2,22 @@ import { NeuralNetwork } from "./src/ai.js";
 
 const config = {
     inputSize: 2,
-    hiddenLayers: [0],
+    hiddenLayers: [2],
     outputSize: 1,
-    accuracyRate: 0.999,
-    iterations: false
-}
+    accuracyRate: 0.99,
+    log: true,
+    activation: "sigmoid",
+    save: false,
+};
 
-const nn = new NeuralNetwork(config)
+const nn = new NeuralNetwork(config);
 
-let trainingData = [
-    {input: [0,0], output: 1},
-    {input: [0,1], output: 1},
-    {input: [1,0], output: 0},
-    {input: [1,1], output: 1},
-]
-nn.train(trainingData) // p => q
-console.log(nn.run([1, 0])); // 0.006203247493668751
+nn.train([
+    {input: [0,0], output: [0]},
+    {input: [0,1], output: [0]},
+    {input: [1,0], output: [0]},
+    {input: [1,1], output: [1]},
+])
+
+let result = nn.run([1, 1])
+console.log(result);

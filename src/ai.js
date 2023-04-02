@@ -31,17 +31,14 @@ export class NeuralNetwork {
     }) {
         this.inputs = Array(inputSize);
         this.hiddenLayer = hiddenLayers.map((size) => {
-            return this.#createHiddenLayer(size);
+            return Array(size)
         });
-        this.outputLayer = this.#createHiddenLayer(outputSize);
+        this.outputLayer = Array(outputSize);
         this.layers = [this.inputs, ...this.hiddenLayer, this.outputLayer];
         this.#randomBrain();
         this.accuracyRate = 1 - accuracyRate;
         this.iterations = iterations;
     }
-    #createHiddenLayer = (size) => {
-        return Array(size);
-    };
     updateLayers() {
         this.layers = [this.inputs, ...this.hiddenLayer, this.outputLayer];
     }

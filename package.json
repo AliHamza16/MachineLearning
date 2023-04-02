@@ -1,6 +1,6 @@
 {
-  "name": "ai---3",
-  "version": "1.0.0",
+  "name": "ai",
+  "version": "3.5.0",
   "description": "create and train neural networks",
   "type": "module",
   "main": "index.js",

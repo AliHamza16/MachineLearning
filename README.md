@@ -9,7 +9,7 @@ Number of input neurons in your neural network.
 ## outputSize
 Number of output neurons in your neural network.
 ## hiddenLayers
-Hidden layers in your neural network.
+Hidden units in your neural network.
 <br>
 ```javascript
 const config = {

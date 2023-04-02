@@ -13,6 +13,7 @@ Hidden layers in your neural network.
 <br>
 ```
 const config = {
+    ...
     inputSize: 2,
     hiddenLayers: [4, 4],
     outputSize: 1

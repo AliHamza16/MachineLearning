@@ -8,7 +8,7 @@ const config = {
     iterations: false
 }
 
-let nn = new NeuralNetwork(config)
+const nn = new NeuralNetwork(config)
 
 let trainingData = [
     {input: [0,0], output: 1},

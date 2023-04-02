@@ -30,9 +30,16 @@ However, high accuracy rates can lead to longer training times for complex netwo
 Determines whether to print to the console how many iterations have been done.
 
 ## activation
-An Activation Function decides whether a neuron should be activated or not.
+an activation function decides whether a neuron should be activated or not.
 <br>
-Supported activations: sigmoid | binaryStep | tanh (hyperbolic) | relu | softplus | gaussian
+supported activations:
+<br>
+ - sigmoid
+ - binaryStep 
+ - tanh (hyperbolic) 
+ - relu
+ - softplus
+ - gaussian
 
 ## save
 saves the trained ai model to `models/` directory

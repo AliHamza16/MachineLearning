@@ -13,7 +13,7 @@ Hidden units in your neural network.
 <br>
 ```javascript
 const config = {
-    ...
+    ...,
     inputSize: 2,
     hiddenLayers: [4, 4],
     outputSize: 1

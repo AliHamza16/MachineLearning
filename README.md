@@ -55,7 +55,8 @@ nn.train(trainingData)
 ```
 then call run function to get result
 ```
-let result = nn.run([1, 1]) // [ 0.9876001252 ]
+let result = nn.run([1, 1]) 
+// [ 0.9876001252 ]
 ```
 the run function returns the output layer of your neural network for given inputs
 <br>

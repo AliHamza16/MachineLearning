@@ -11,7 +11,7 @@ Number of output neurons in your neural network.
 ## hiddenLayers
 Hidden layers in your neural network.
 <br>
-```
+```javascript
 const config = {
     ...
     inputSize: 2,
@@ -30,7 +30,7 @@ However, high accuracy rates can lead to longer training times for complex netwo
 Determines whether to print to the console how many iterations have been done.
 
 # Training Neural Network
-```
+```javascript
 const config = {
     inputSize: 2,
     hiddenLayers: [0],
@@ -42,7 +42,7 @@ const config = {
 const nn = new NeuralNetwork(config)
 ```
 to train the neural network, create a array that specifies which result it will give based on which input
-```
+```javascript
 let trainingData = [
     {input: [0,0], output: 1},
     {input: [0,1], output: 1},
@@ -51,11 +51,11 @@ let trainingData = [
 ]
 ```
 and call train function with training data
-```
+```javascript
 nn.train(trainingData)
 ```
 then call run function to get result
-```
+```javascript
 let result = nn.run([1, 1]) 
 // [ 0.9876001252 ]
 ```
